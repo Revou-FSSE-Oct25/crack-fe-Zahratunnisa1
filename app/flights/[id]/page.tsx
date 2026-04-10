@@ -1,72 +1,81 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { useParams } from "next/navigation";
+import { useParams, useRouter } from "next/navigation";
+import { Card, CardContent } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+import { motion } from "framer-motion";
 
 export default function FlightDetail() {
-  const params = useParams();
+  const { id } = useParams();
+  const router = useRouter();
   const [flight, setFlight] = useState<any>(null);
-  const [seats, setSeats] = useState(1);
-
 
   useEffect(() => {
-    if (!params?.id) return;
+    fetch(`http://localhost:3000/flights/${id}`)
+      .then((res) => res.json())
+      .then(setFlight);
+  }, [id]);
 
-    const fetchFlight = async () => {
-      const res = await fetch(
-        `http://localhost:3000/flights/${params.id}`
-      );
-      const data = await res.json();
-      setFlight(data);
-    };
-
-    fetchFlight();
-  }, [params]);
-
-  if (!flight) return <div>Loading...</div>;
-
-  const handleBooking = async () => {
-  try {
-    const res = await fetch("http://localhost:3000/bookings", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        flightId: Number(params.id),
-        seats: seats,
-      }),
-    });
-
-    const data = await res.json();
-    console.log(data);
-
-    alert("Booking berhasil 🎉");
-  } catch (err) {
-    console.error(err);
-    alert("Booking gagal ❌");
-  }
-};
-
+  if (!flight)
+    return (
+      <div className="min-h-screen flex items-center justify-center text-gray-400">
+        ✈️ Loading flight...
+      </div>
+    );
 
   return (
-    <div style={{ padding: 20 }}>
-      <h1>✈️ Flight Detail</h1>
+    <div className="min-h-screen bg-gradient-to-br from-purple-100 via-white to-purple-50 p-6 flex flex-col items-center">
 
-      <p><b>{flight.from}</b> → <b>{flight.to}</b></p>
-      <p>💰 Price: {flight.price}</p>
-      <p>🪑 Seats: {flight.seats}</p>
+      {/* HEADER */}
+      <h1 className="text-4xl font-bold text-purple-700 mb-6">
+        ✈️ Flight Detail
+      </h1>
 
-    <input type="number" value={seats} onChange={(e) => setSeats(Number(e.target.value))}
-    min={1}
-  />
+      {/* CARD */}
+      <motion.div
+        initial={{ opacity: 0, y: 30 }}
+        animate={{ opacity: 1, y: 0 }}
+        className="w-full max-w-xl"
+      >
+        <Card className="rounded-2xl shadow-2xl">
+          <CardContent className="p-6 flex flex-col gap-4">
 
-    <button onClick={handleBooking}>
-    BOOK NOW ✈️
-    </button>
+            {/* ROUTE */}
+            <h2 className="text-2xl font-bold text-purple-700 text-center">
+              {flight.from} → {flight.to}
+            </h2>
 
-  </div>
+            {/* INFO */}
+            <div className="flex justify-between text-gray-600">
+              <p>🪑 Seats</p>
+              <p>{flight.seats}</p>
+            </div>
 
+            <div className="flex justify-between text-gray-600">
+              <p>💰 Price</p>
+              <p className="font-semibold text-purple-600">
+                Rp {flight.price}
+              </p>
+            </div>
+
+            {/* ACTION */}
+            <Button className="bg-purple-600 hover:bg-purple-700 text-white mt-4">
+              Book Now
+            </Button>
+
+            {/* BACK */}
+            <button
+              onClick={() => router.back()}
+              className="text-sm text-gray-400 hover:text-purple-600"
+            >
+              ← Back
+            </button>
+
+          </CardContent>
+        </Card>
+      </motion.div>
+
+    </div>
   );
 }
-

@@ -2,77 +2,115 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
+import { Input } from "@/components/ui/input";
+import { Button } from "@/components/ui/button";
+import { Card, CardContent } from "@/components/ui/card";
+import { motion } from "framer-motion";
 
 export default function FlightsPage() {
   const [flights, setFlights] = useState<any[]>([]);
   const [from, setFrom] = useState("");
   const [to, setTo] = useState("");
+  const [loading, setLoading] = useState(false);
   const router = useRouter();
 
   const searchFlights = async () => {
+    setLoading(true);
     try {
       const res = await fetch(
         `http://localhost:3000/flights?from=${from}&to=${to}`
       );
-
       const data = await res.json();
       setFlights(data);
     } catch (err) {
       console.error("Fetch error:", err);
+    } finally {
+      setLoading(false);
     }
   };
 
   return (
-    <div style={{ padding: 20 }}>
-       <h1 style={{ color: "#7c3aed" }}>✈️ Flight Booking</h1>
-       <a href="/my-bookings">📜 Lihat Booking Saya</a>
+    <div className="min-h-screen bg-gradient-to-br from-purple-100 via-white to-purple-50 flex flex-col">
 
-      {/* SEARCH BOX */}
-      <div style={{ marginTop: 20, display: "flex", gap: 10 }}>
-        <input
-          placeholder="From"
-          value={from}
-          onChange={(e) => setFrom(e.target.value)}
-          style={{ padding: 10, borderRadius: 8 }}
-        />
-
-        <input
-          placeholder="To (contoh: DPS)"
-          value={to}
-          onChange={(e) => setTo(e.target.value)}
-          style={{ padding: 10, borderRadius: 8 }}
-        />
-
-        <button onClick={searchFlights}style={{
-            backgroundColor: "#7c3aed",
-            color: "white",
-            padding: "10px 20px",
-            borderRadius: 8,
-          }}>Search</button>
+      {/* HEADER */}
+      <div className="text-center mt-10">
+        <h1 className="text-5xl font-extrabold text-purple-700 tracking-tight">
+          ✈️ Destinayo
+        </h1>
+        <p className="text-gray-500 mt-2">Temukan perjalanan terbaikmu</p>
       </div>
 
-      <div>
-        {flights.map((f) => (
-          <div
-            key={f.id}
-            onClick={() => router.push(`/flights/${f.id}`)}
-            style={{
-              backgroundColor: "white",
-              padding: 15,
-              border: "1px solid #ccc",
-              marginBottom: 10,
-              borderRadius: 10,
-              cursor: "pointer",
-              boxShadow: "0 2px 5px rgba(0,0,0,0.1)"
-            }}
-          >
-            <p>
-              <h3>{f.from} →{f.to}</h3>
-            </p>
-            <p>💰 Price: {f.price}</p>
-            <p>🪑 Seats: {f.seats}</p>
+      {/* SEARCH CENTER */}
+      <div className="flex flex-1 items-center justify-center px-6">
+        <motion.div
+          initial={{ opacity: 0, y: 30 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.5 }}
+          className="w-full max-w-2xl bg-white/70 backdrop-blur-lg shadow-2xl rounded-2xl p-6 border"
+        >
+          <div className="flex flex-col md:flex-row gap-3">
+            <Input
+              placeholder="✈️ From (e.g. CGK)"
+              value={from}
+              onChange={(e) => setFrom(e.target.value)}
+            />
+
+            <Input
+              placeholder="📍 To (e.g. DPS)"
+              value={to}
+              onChange={(e) => setTo(e.target.value)}
+            />
+
+            <Button
+              onClick={searchFlights}
+              className="bg-purple-600 hover:bg-purple-700 text-white"
+            >
+              {loading ? "Searching..." : "Search"}
+            </Button>
           </div>
-        ))}
+        </motion.div>
+      </div>
+
+      {/* RESULTS */}
+      <div className="pb-10 px-6">
+        {flights.length === 0 && !loading && (
+          <p className="text-center text-gray-400">
+            Belum ada hasil ✨ coba cari penerbangan dulu
+          </p>
+        )}
+
+        <div className="grid gap-4 max-w-2xl mx-auto mt-6">
+          {flights.map((f) => (
+            <motion.div
+              key={f.id}
+              whileHover={{ scale: 1.03 }}
+              whileTap={{ scale: 0.98 }}
+            >
+              <Card
+                onClick={() => router.push(`/flights/${f.id}`)}
+                className="cursor-pointer hover:shadow-2xl transition rounded-2xl"
+              >
+                <CardContent className="p-6 flex justify-between items-center">
+                  <div>
+                    <h2 className="text-xl font-bold text-purple-700">
+                      {f.from} → {f.to}
+                    </h2>
+                    <p className="text-sm text-gray-500 mt-1">
+                      🪑 {f.seats} seats available
+                    </p>
+                  </div>
+
+                  <div className="text-right">
+                    <p className="text-lg font-semibold text-purple-600">
+                      Rp {f.price}
+                    </p>
+                    <p className="text-xs text-gray-400">per seat</p>
+                  </div>
+                </CardContent>
+              </Card>
+            </motion.div>
+          ))}
+        </div>
       </div>
     </div>
   );
