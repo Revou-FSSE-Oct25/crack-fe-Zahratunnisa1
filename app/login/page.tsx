@@ -1,8 +1,9 @@
 "use client"
 
-import { signIn } from "next-auth/react"
 import { useState } from "react"
 import { useRouter } from "next/navigation"
+import { Input } from "@/components/ui/input";
+import { Button } from "@/components/ui/button";
 
 export default function LoginPage() {
   const router = useRouter()
@@ -16,60 +17,108 @@ export default function LoginPage() {
     setLoading(true)
     setError("")
 
-    const res = await signIn("credentials", {
-      email,
-      password,
-      redirect: false,
-    })
+  try {
+    const res = await fetch("http://localhost:3000/auth/login", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        email,
+        password,
+      }),
+    });
 
-    setLoading(false)
+    const data = await res.json();
+    console.log("LOGIN RESPONSE:", data);
 
-    if (res?.error) {
-      setError("Email atau password salah")
-      return
+    setLoading(false);
+
+    if (!res.ok) {
+      setError("Email atau password salah");
+      return;
     }
 
-    router.push("/dashboard")
+    if (!data.access_token) {
+      throw new Error("Token tidak ada di response");
+    }
+
+    // simpan token
+    localStorage.setItem("token", data.access_token);
+
+    // redirect
+    router.push("/flights");
+  } catch (err) {
+    console.error("LOGIN ERROR:", err);
+    setError("Terjadi error saat login");
+  } finally {
+    setLoading(false);
   }
+};
 
   return (
-    <div className="flex min-h-screen items-center justify-center">
-      <form
-        onSubmit={handleLogin}
-        className="w-full max-w-md space-y-4 rounded-xl border p-8 shadow-lg"
-      >
-        <h1 className="text-2xl font-bold text-center">Login</h1>
+    <div className="relative min-h-screen">
 
-        {error && (
-          <p className="text-sm text-red-500 text-center">{error}</p>
-        )}
-
-        <input
-          type="email"
-          placeholder="Email"
-          className="w-full rounded-lg border p-3"
-          value={email}
-          onChange={(e) => setEmail(e.target.value)}
-          required
+       {/* 🌆 BACKGROUND */}
+      <div className="absolute inset-0">
+        <img
+          src="/airport.avif"
+          className="w-full h-full object-cover"
         />
+      </div>
 
-        <input
-          type="password"
-          placeholder="Password"
-          className="w-full rounded-lg border p-3"
-          value={password}
-          onChange={(e) => setPassword(e.target.value)}
-          required
-        />
+       {/* 🌑 OVERLAY */}
+      <div className="absolute inset-0 bg-black/50" />
 
-        <button
-          type="submit"
-          disabled={loading}
-          className="w-full rounded-lg bg-black p-3 text-white hover:opacity-90 disabled:opacity-50"
+        {/* 🌑 OVERLAY */}
+      <div className="absolute inset-0 bg-black/50" />
+
+      {/* 💜 CONTENT */}
+      <div className="relative z-10 flex items-center justify-center min-h-screen px-4">
+
+        <form
+          onSubmit={handleLogin}
+          className="w-full max-w-md space-y-4 rounded-2xl bg-white/90 backdrop-blur-xl p-8 shadow-2xl border border-white/30"
         >
-          {loading ? "Loading..." : "Login"}
-        </button>
-      </form>
+          <h1 className="text-3xl font-bold text-center text-purple-700">
+            ✈️ Destinayo Login
+          </h1>
+
+          <p className="text-center text-gray-600 text-sm font-light tracking-wide">
+            Login to continue your travel
+          </p>
+
+          {error && (
+            <p className="text-sm text-red-500 text-center">{error}</p>
+          )}
+
+          <Input
+            type="email"
+            placeholder="Email"
+            className="text-black"
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
+            required
+          />
+
+          <Input
+            type="password"
+            placeholder="Password"
+            className="text-black"
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
+            required
+          />
+
+          <Button
+            type="submit"
+            disabled={loading}
+            className="w-full bg-purple-600 hover:bg-purple-700 text-white"
+          >
+            {loading ? "Loading..." : "Login"}
+          </Button>
+        </form>
+      </div>
     </div>
-  )
+  );
 }

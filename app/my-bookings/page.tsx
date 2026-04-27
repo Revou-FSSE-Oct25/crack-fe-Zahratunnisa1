@@ -7,7 +7,7 @@ export default function MyBookings() {
 
   useEffect(() => {
     const fetchBookings = async () => {
-      const token = localStorage.getItem("eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOjEsImlhdCI6MTc3NTM2MTQ3NywiZXhwIjoxNzc1NDQ3ODc3fQ.kI_gmsTkYjErCD5-PzQXi4MTP_kjoIXn4KhOBUkaX00"); 
+      const token = localStorage.getItem("token"); 
       if (!token) return;
 
       const res = await fetch("http://localhost:3000/bookings/my", {

@@ -60,7 +60,9 @@ export default function FlightDetail() {
             </div>
 
             {/* ACTION */}
-            <Button className="bg-purple-600 hover:bg-purple-700 text-white mt-4">
+            <Button 
+            onClick={() => router.push(`/flights/${id}/booking`)}
+            className="bg-purple-600 hover:bg-purple-700 text-white mt-4">
               Book Now
             </Button>
 

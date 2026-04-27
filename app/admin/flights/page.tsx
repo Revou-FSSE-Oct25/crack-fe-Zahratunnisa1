@@ -1,200 +1,175 @@
-"use client"
+"use client";
 
-import { useEffect, useState } from "react"
+import { useEffect, useState } from "react";
+import Navbar from "@/components/Navbar";
 
 export default function AdminFlightsPage() {
+  const [flights, setFlights] = useState<any[]>([]);
+  const [showForm, setShowForm] = useState(false);
 
-  const [flights, setFlights] = useState([])
-  const [showForm, setShowForm] = useState(false)
-  const [editingFlight, setEditingFlight] = useState<any>(null)
-
-
-  const [airline, setAirline] = useState("")
-  const [from, setFrom] = useState("")
-  const [to, setTo] = useState("")
-  const [departure, setDeparture] = useState("")
-  const [arrival, setArrival] = useState("")
-  const [price, setPrice] = useState("")
-  const [seats, setSeats] = useState("")
-
+  const [airline, setAirline] = useState("");
+  const [from, setFrom] = useState("");
+  const [to, setTo] = useState("");
+  const [departure, setDeparture] = useState("");
+  const [arrival, setArrival] = useState("");
+  const [price, setPrice] = useState("");
+  const [seats, setSeats] = useState("");
 
   async function fetchFlights() {
-    const res = await fetch("/api/flights")
-    const data = await res.json()
-    setFlights(data)
+    const res = await fetch("http://localhost:3000/flights");
+    const data = await res.json();
+    setFlights(data);
   }
 
   useEffect(() => {
-    fetchFlights()
-  }, [])
+    fetchFlights();
+  }, []);
 
-  function editFlight(flight: any) {
-  setEditingFlight(flight)
-}
+  async function deleteFlight(id: number) {
+    await fetch(`http://localhost:3000/flights/${id}`, {
+      method: "DELETE",
+      headers: {
+        Authorization: `Bearer ${localStorage.getItem("token")}`,
+      },
+    });
 
-  async function deleteFlight(id: string) {
-
-    console.log("ID sent to API:", id)
-
-    const confirmDelete = confirm("Delete this flight?")
-
-    if (!confirmDelete) return
-
-    await fetch(`/api/flights/${id}`, {
-      method: "DELETE"
-    })
-
-    setFlights(flights.filter((f:any) => f.id !== id))
-
+    fetchFlights();
   }
 
   async function createFlight() {
+    const res = await fetch("http://localhost:3000/flights", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${localStorage.getItem("token")}`,
+      },
+      body: JSON.stringify({
+        airline,
+        from,
+        to,
+        departureTime: departure,
+        arrivalTime: arrival,
+        price: Number(price),
+        seats: Number(seats),
+      }),
+    });
 
-  const res = await fetch("/api/flights", {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json"
-    },
-    body: JSON.stringify({
-      airline,
-      from,
-      to,
-      departure,
-      arrival,
-      price: Number(price),
-      seats: Number(seats)
-    })
-  })
-
-  if (res.ok) {
-    alert("Flight created")
-    fetchFlights()
-    setShowForm(false)
-  } else {
-    alert("Failed to create flight")
+    if (res.ok) {
+      setShowForm(false);
+      fetchFlights();
+    } else {
+      alert("Failed create flight");
+    }
   }
-}
-
-async function updateFlight() {
-
-  await fetch(`/api/flights/${editingFlight.id}`, {
-    method: "PUT",
-    headers: {
-      "Content-Type": "application/json"
-    },
-    body: JSON.stringify(editingFlight)
-  })
-
-  setEditingFlight(null)
-
-  fetchFlights()
-}
 
   return (
-    <div style={{ padding: "20px" }}>
-      <h1>Admin Flights</h1>
+    <div className="min-h-screen bg-gradient-to-br from-black via-purple-900 to-black text-white">
+      <Navbar />
 
-    <button onClick={() => setShowForm(true)}>
-         Add Flight
-    </button>
+      <div className="max-w-6xl mx-auto p-6">
 
-    {showForm && (
+        {/* HEADER */}
+        <div className="flex justify-between items-center mb-6">
+          <h1 className="text-3xl font-bold text-purple-300">
+            ✈️ Admin Flights
+          </h1>
 
-    <div style={{ marginTop: "20px" }}>
+          <button
+            onClick={() => setShowForm(!showForm)}
+            className="bg-purple-600 hover:bg-purple-700 px-4 py-2 rounded-lg"
+          >
+            + Add Flight
+          </button>
+        </div>
 
-    <h3>Add Flight</h3>
+        {/* FORM */}
+        {showForm && (
+          <div className="bg-white/10 backdrop-blur-lg p-6 rounded-xl mb-6 space-y-3">
 
-    <input placeholder="Airline" onChange={(e)=>setAirline(e.target.value)} />
-    <input placeholder="From" onChange={(e)=>setFrom(e.target.value)} />
-    <input placeholder="To" onChange={(e)=>setTo(e.target.value)} />
+            <div className="grid grid-cols-2 gap-3">
+              <input placeholder="Airline" className="p-2 rounded text-black"
+                onChange={(e) => setAirline(e.target.value)} />
 
-    <input type="datetime-local"
-    onChange={(e)=>setDeparture(e.target.value)} />
+              <input placeholder="From" className="p-2 rounded text-black"
+                onChange={(e) => setFrom(e.target.value)} />
 
-    <input type="datetime-local"
-    onChange={(e)=>setArrival(e.target.value)} />
+              <input placeholder="To" className="p-2 rounded text-black"
+                onChange={(e) => setTo(e.target.value)} />
 
-    <input placeholder="Price"
-    onChange={(e)=>setPrice(e.target.value)} />
+              <input type="datetime-local" className="p-2 rounded text-black"
+                onChange={(e) => setDeparture(e.target.value)} />
 
-    <input placeholder="Seats"
-    onChange={(e)=>setSeats(e.target.value)} />
+              <input type="datetime-local" className="p-2 rounded text-black"
+                onChange={(e) => setArrival(e.target.value)} />
 
-  <br/><br/>
+              <input placeholder="Price" className="p-2 rounded text-black"
+                onChange={(e) => setPrice(e.target.value)} />
 
-  <button onClick={createFlight}>
-  Create Flight
-  </button>
+              <input placeholder="Seats" className="p-2 rounded text-black"
+                onChange={(e) => setSeats(e.target.value)} />
+            </div>
 
-  {editingFlight && (
-  <div>
-    <h2>Edit Flight</h2>
+            <button
+              onClick={createFlight}
+              className="bg-purple-600 hover:bg-purple-700 px-4 py-2 rounded-lg mt-3"
+            >
+              Create Flight
+            </button>
+          </div>
+        )}
 
-    <input
-      value={editingFlight.airline}
-      onChange={(e) =>
-        setEditingFlight({
-          ...editingFlight,
-          airline: e.target.value
-        })
-      }
-    />
+        {/* TABLE */}
+        <div className="bg-white/10 backdrop-blur-lg rounded-xl overflow-hidden">
+          <table className="w-full text-left">
 
-    <input
-      value={editingFlight.price}
-      onChange={(e) =>
-        setEditingFlight({
-          ...editingFlight,
-          price: e.target.value
-        })
-      }
-    />
+            <thead className="bg-purple-700/50">
+              <tr>
+                <th className="p-3">Airline</th>
+                <th className="p-3">Route</th>
+                <th className="p-3">Time</th>
+                <th className="p-3">Price</th>
+                <th className="p-3">Action</th>
+              </tr>
+            </thead>
 
-    <button onClick={updateFlight}>
-      Update Flight
-    </button>
-  </div>
-)}
+            <tbody>
+              {flights.map((f) => (
+                <tr key={f.id} className="border-b border-white/10 hover:bg-white/10">
 
-</div>
+                  <td className="p-3">{f.airline}</td>
 
-)}
+                  <td className="p-3">
+                    {f.from} → {f.to}
+                  </td>
 
-      <table border={1} cellPadding={10}>
-        <thead>
-          <tr>
-            <th>Airline</th>
-            <th>From</th>
-            <th>To</th>
-            <th>Price</th>
-            <th>Action</th>
-          </tr>
-        </thead>
+                  <td className="p-3 text-sm">
+                    {new Date(f.departureTime).toLocaleTimeString("id-ID")} -{" "}
+                    {new Date(f.arrivalTime).toLocaleTimeString("id-ID")}
+                  </td>
 
-        <tbody>
-          {flights.map((flight: any) => (
-            <tr key={flight.id}>
-              <td>{flight.airline}</td>
-              <td>{flight.from}</td>
-              <td>{flight.to}</td>
-              <td>{flight.price}</td>
+                  <td className="p-3 text-purple-300 font-semibold">
+                    Rp {f.price.toLocaleString("id-ID")}
+                  </td>
 
-              <td>
-                <button onClick={() => deleteFlight(flight.id)}>
-                  Delete
-                </button>
+                  <td className="p-3">
+                    <button
+                      onClick={() => deleteFlight(f.id)}
+                      className="bg-red-500 hover:bg-red-600 px-3 py-1 rounded"
+                    >
+                      Delete
+                    </button>
+                  </td>
 
-                <button onClick={() => editFlight(flight)}>
-                  Edit
-                </button>
-              </td>
+                </tr>
+              ))}
+            </tbody>
 
-            </tr>
-          ))}
-        </tbody>
+          </table>
+        </div>
 
-      </table>
+      </div>
     </div>
-  )
+  );
 }
+
 
