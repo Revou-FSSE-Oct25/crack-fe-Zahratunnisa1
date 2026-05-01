@@ -5,17 +5,26 @@ import { useParams, useRouter } from "next/navigation";
 import Navbar from "@/components/Navbar";
 
 export default function BookingPage() {
-  const { id } = useParams();
+  const params = useParams();
+  const id = params?.id;
   const router = useRouter();
 
-  const [name, setName] = useState("");
-  const [email, setEmail] = useState("");
-  const [phone, setPhone] = useState("");
+ const [passengers, setPassengers] = useState([
+    { name: "", email: "", phone: "" },
+  ]);
 
-  const handleBooking = async () => {
+  const addPassenger = () => {
+    setPassengers([...passengers, { name: "", email: "", phone: "" }]);
+  };
+
+  const handleChange = (index: number, field: string, value: string) => {
+    const newPassengers = [...passengers];
+    (newPassengers[index] as any)[field] = value;
+    setPassengers(newPassengers);
+  };
+
+  const handleSubmit = async () => {
     const token = localStorage.getItem("token");
-
-    console.log("TOKEN:", token);
 
     const res = await fetch("http://localhost:3000/bookings", {
       method: "POST",
@@ -25,22 +34,19 @@ export default function BookingPage() {
       },
       body: JSON.stringify({
         flightId: Number(id),
-        seats: 1,
-        name,
-        email,
-        phone,
+        seats: passengers.length,
+        passengers,
       }),
     });
 
   const data = await res.json();
-  console.log("RESPONSE:", data);
 
-  if (res.ok) {
-    // ❗ JANGAN ke my-bookings dulu
-    router.push(`/booking/${data.id}`);
-  } else {
+  if (!res.ok) {
     alert("Booking gagal");
+    return;
   }
+
+  router.push(`/booking/${data.id}`);
 };
 
   return (
@@ -48,40 +54,63 @@ export default function BookingPage() {
       <Navbar />
 
       <div className="max-w-3xl mx-auto mt-10 bg-white p-8 rounded-xl shadow">
-        <h1 className="text-2xl font-bold mb-6">
-          Isi Data Pemesan ✈️
+        <h1 className="text-2xl font-bold text-purple-600 mb-6">
+          Fill Your Data ✈️
         </h1>
 
-        <div className="space-y-4">
+ {/* 🔁 LOOP PASSENGER */}
+      {passengers.map((p, index) => (
+        <div key={index} className="mb-6 border p-4 rounded-lg">
+
+          <h2 className="font-semibold mb-3 text-gray-800">
+            
+            Passenger {index + 1}
+          </h2>
+
           <input
-            className="w-full border p-3 rounded"
-            placeholder="Nama Lengkap"
-            value={name}
-            onChange={(e) => setName(e.target.value)}
+            className="w-full border p-3 rounded mb-2 text-black"
+            placeholder="Full Name"
+            value={p.name}
+            onChange={(e) =>
+              handleChange(index, "name", e.target.value)
+            }
           />
 
           <input
-            className="w-full border p-3 rounded"
+            className="w-full border p-3 rounded mb-2 text-black"
             placeholder="Email"
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
+            value={p.email}
+            onChange={(e) =>
+              handleChange(index, "email", e.target.value)
+            }
           />
 
           <input
-            className="w-full border p-3 rounded"
-            placeholder="No HP"
-            value={phone}
-            onChange={(e) => setPhone(e.target.value)}
+            className="w-full border p-3 rounded text-black"
+            placeholder="Phone"
+            value={p.phone}
+            onChange={(e) =>
+              handleChange(index, "phone", e.target.value)
+            }
           />
-
-          <button
-            onClick={handleBooking}
-            className="w-full bg-purple-600 text-white p-3 rounded hover:bg-purple-700"
-          >
-            Konfirmasi Booking
-          </button>
         </div>
-      </div>
+      ))}
+
+      {/* ➕ TAMBAH PENUMPANG */}
+      <button
+        onClick={addPassenger}
+        className="mb-4 text-purple-600 font-semibold"
+      >
+        + Add Passenger
+      </button>
+
+      {/* SUBMIT */}
+      <button
+        onClick={handleSubmit}
+        className="w-full bg-purple-600 text-white py-3 rounded-lg"
+      >
+        Continue to Payment
+      </button>
     </div>
-  );
-}
+</div>)}
+

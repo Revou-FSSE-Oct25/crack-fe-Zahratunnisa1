@@ -18,7 +18,10 @@ export default function AdminFlightsPage() {
   async function fetchFlights() {
     const res = await fetch("http://localhost:3000/flights");
     const data = await res.json();
-    setFlights(data);
+
+    console.log("FLIGHTS DATA:", data);
+    setFlights(Array.isArray(data) ? data : []);
+;
   }
 
   useEffect(() => {
@@ -47,8 +50,8 @@ export default function AdminFlightsPage() {
         airline,
         from,
         to,
-        departureTime: departure,
-        arrivalTime: arrival,
+       departureTime: new Date(departure).toISOString(), 
+      arrivalTime: new Date(arrival).toISOString(),     
         price: Number(price),
         seats: Number(seats),
       }),
@@ -143,8 +146,14 @@ export default function AdminFlightsPage() {
                   </td>
 
                   <td className="p-3 text-sm">
-                    {new Date(f.departureTime).toLocaleTimeString("id-ID")} -{" "}
-                    {new Date(f.arrivalTime).toLocaleTimeString("id-ID")}
+                    {new Date(f.departureTime).toLocaleTimeString("id-ID", {
+                      hour: "2-digit",
+                      minute: "2-digit",
+                    })}{" "}
+                    {new Date(f.arrivalTime).toLocaleTimeString("id-ID", {
+                          hour: "2-digit",
+                          minute: "2-digit",
+                    })}
                   </td>
 
                   <td className="p-3 text-purple-300 font-semibold">

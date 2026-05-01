@@ -231,6 +231,17 @@ export default function BookingDetailPage() {
                 </span>
               </div>
 
+              <h2 className="text-lg font-semibold mt-6 mb-2">
+                Passengers
+              </h2>
+
+            {booking.passengers?.map((p: any) => (
+              <div key={p.id} className="border p-3 rounded mb-2">
+                <p className="font-semibold">{p.name}</p>
+                <p className="text-sm text-gray-500">{p.email}</p>
+                <p className="text-sm text-gray-500">{p.phone}</p>
+              </div>
+            ))}
             </CardContent>
           </Card>
         </div>

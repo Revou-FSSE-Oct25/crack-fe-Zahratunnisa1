@@ -2,6 +2,19 @@
 
 import { useEffect, useState } from "react";
 import { useSearchParams, useRouter } from "next/navigation";
+import { Card, CardContent } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+
+type Flight = {
+  id: number;
+  from: string;
+  to: string;
+  airline: string;
+  departureTime: string;
+  arrivalTime: string;
+  seats: number;
+  price: number;
+};
 
 export default function ResultPage() {
   const params = useSearchParams();
@@ -9,106 +22,92 @@ export default function ResultPage() {
   const to = params.get("to");
   const router = useRouter();
 
-  const [flights, setFlights] = useState([]);
+  const [flights, setFlights] = useState<Flight[]>([]);
 
   useEffect(() => {
+    if (!from || !to) return;
+
     fetch(`http://localhost:3000/flights?from=${from}&to=${to}`)
       .then((res) => res.json())
-      .then(setFlights);
+      .then(setFlights)
+      .catch((err) => console.error(err));
   }, [from, to]);
 
-  const handleBooking = async (flightId: number) => {
-  const token = localStorage.getItem("token");
-
-  if (!token) {
-    alert("Please, Login First!");
-    return;
-  }
-
-  try {
-    const res = await fetch("http://localhost:3000/bookings", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${token}`,
-      },
-      body: JSON.stringify({
-        flightId,
-        seats: 1,
-      }),
-    });
-
-    const data = await res.json();
-
-    console.log(data);
-
-    if (!res.ok) {
-      alert("Booking failed");
-      return;
-    }
-
-router.push(`/booking/${data.id}`);
-
-  } catch (err) {
-    console.error(err);
-    alert("Terjadi error");
-  }
-};
   return (
-    <div style={{ padding: 20 }}>
-      <h1>✈️ Result Flight</h1>
-      <p>{from} → {to}</p>
+    <div className="min-h-screen bg-gray-50 p-6">
 
-{flights.map((f: any) => (
-  <div
-    key={f.id}
-    style={{
-      border: "1px solid #ccc",
-      margin: 10,
-      padding: 10,
-    }}
-  >
-    <p><b>{f.from}</b> → <b>{f.to}</b></p>
+      {/* HEADER */}
+      <div className="max-w-4xl mx-auto mb-6">
+        <h1 className="text-2xl font-bold text-purple-600">
+          Destinayo ✈️
+        </h1>
 
-    <p>✈️ {f.airline}</p>
+        <p className="text-gray-700 mt-2">
+          {from} → {to}
+        </p>
+      </div>
 
-    <p>
-      🕐Departure :{" "}
-       {new Date(f.departureTime).toLocaleString("id-ID", {
-        timeZone: "Asia/Jakarta",
-        hour: "2-digit",
-        minute: "2-digit",
-      })} WIB
-      </p>
+      {/* LIST */}
+      <div className="max-w-4xl mx-auto space-y-4">
+        {flights.map((f) => (
+          <Card
+            key={f.id}
+            className="bg-white border border-gray-200 rounded-2xl shadow-sm hover:shadow-md transition"
+          >
+            <CardContent className="p-5 flex justify-between items-center">
 
+              {/* LEFT */}
+              <div className="flex items-center gap-4">
+                <div className="bg-purple-100 text-purple-600 p-3 rounded-xl">
+                  ✈️
+                </div>
 
-    <p>
-  🛬 Arrival :{" "}
-      {new Date(f.arrivalTime).toLocaleString("id-ID", {
-        timeZone: "Asia/Jakarta",
-        hour: "2-digit",
-        minute: "2-digit",
-      })} WIB
-    </p>
+                <div>
+                  <h2 className="text-lg font-semibold text-gray-800">
+                    {f.from} → {f.to}
+                  </h2>
 
-    <p>💺 Seats: {f.seats}</p>
-    <p>💰 Rp {f.price}</p>
+                  <p className="text-sm text-gray-500">
+                    {f.airline}
+                  </p>
 
-    {/* 🔥 BUTTON BOOK */}
-    <button
-      onClick={() => router.push(`/flights/${f.id}`)}
-      style={{
-        marginTop: 10,
-        padding: "8px 12px",
-        background: "black",
-        color: "white",
-        borderRadius: 6,
-      }}
-    >
-      Booking Ticket
-    </button>
-  </div>
-))}
+                  <p className="text-sm text-gray-500">
+                    🕐{" "}
+                    {new Date(f.departureTime).toLocaleTimeString("id-ID", {
+                      hour: "2-digit",
+                      minute: "2-digit",
+                    })} -{" "}
+                    {new Date(f.arrivalTime).toLocaleTimeString("id-ID", {
+                      hour: "2-digit",
+                      minute: "2-digit",
+                    })}
+                  </p>
+
+                  <p className="text-sm text-gray-500">
+                    💺 {f.seats} seats available
+                  </p>
+                </div>
+              </div>
+
+              {/* RIGHT */}
+              <div className="text-right">
+                <p className="text-lg font-bold text-purple-600">
+                  Rp {f.price.toLocaleString("id-ID")}
+                </p>
+
+                <Button
+                  className="mt-2 bg-purple-600 hover:bg-purple-700"
+                  onClick={() => router.push(`/flights/${f.id}`)}
+                >
+                  View Detail
+                </Button>
+              </div>
+
+            </CardContent>
+          </Card>
+        ))}
+      </div>
     </div>
   );
 }
+
