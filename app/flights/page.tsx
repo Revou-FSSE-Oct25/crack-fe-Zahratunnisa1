@@ -7,6 +7,9 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { motion } from "framer-motion";
 import Navbar from "@/components/Navbar";
+import DestinationCarousel from "@/components/home/DestinationCarousel";
+import CheapFlights from "@/components/home/CheapFlights";
+
 
 export default function FlightsPage() {
   const [flights, setFlights] = useState<any[]>([]);
@@ -32,7 +35,7 @@ export default function FlightsPage() {
       {/* 🌌 BACKGROUND */}
       <div className="absolute inset-0 -z-10">
         <img
-          src="/bg-pesawat.jpg"
+          src="/bg-flights.jpg"
           className="w-full h-full object-cover"
         />
       </div>
@@ -48,7 +51,7 @@ export default function FlightsPage() {
 
         {/* HEADER */}
         <div className="text-center mt-16">
-          <h1 className="text-5xl font-extrabold text-white tracking-tight">
+          <h1 className="text-5xl font-extrabold text-purple-600">
             ✈️ Destinayo
           </h1>
           <p className="text-purple-200 mt-2">
@@ -88,6 +91,9 @@ export default function FlightsPage() {
             </div>
           </motion.div>
         </div>
+
+        <DestinationCarousel />
+        <CheapFlights />
 
       </div>
     </div>

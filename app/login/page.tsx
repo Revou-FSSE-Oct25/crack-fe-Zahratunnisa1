@@ -45,6 +45,7 @@ export default function LoginPage() {
 
     // simpan token
     localStorage.setItem("token", data.access_token);
+    localStorage.setItem("user", JSON.stringify(data.user));
 
     // redirect
     router.push("/flights");

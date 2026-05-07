@@ -74,45 +74,51 @@ export default function BookingDetailPage() {
   }, [booking]);
 
   // ✅ PAYMENT
-  const handlePayment = async () => {
-    const token = localStorage.getItem("token");
+const handlePayment = async () => {
+  const token = localStorage.getItem("token");
 
-    if (!token) {
-      alert("Please login first");
+  if (!token) {
+    alert("Please login first");
+    return;
+  }
+
+  const formData = new FormData();
+  formData.append("method", method);
+
+  if (file) {
+    formData.append("file", file);
+  }
+
+  try {
+    const res = await fetch(
+      `http://localhost:3000/bookings/${id}/pay`,
+      {
+        method: "PATCH",
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+        body: formData,
+      }
+    );
+
+    const data = await res.json(); // 🔥 ambil response
+
+    if (!res.ok) {
+      alert(data.message || "Payment failed");
       return;
     }
 
-    const formData = new FormData();
-    formData.append("method", method);
+    alert("✅ Payment submitted!");
 
-    if (file) {
-      formData.append("file", file);
-    }
+    await fetchBooking(); // 
 
-    try {
-      const res = await fetch(
-        `http://localhost:3000/bookings/${id}/pay`,
-        {
-          method: "PATCH",
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-          body: formData,
-        }
-      );
+    router.push(`/e-ticket/${id}`); // pindah hanya kalau sukses
 
-      if (!res.ok) {
-        alert("Payment failed");
-        return;
-      }
-
-      alert("✅ Payment submitted!");
-      fetchBooking();
-    } catch (err) {
-      console.error(err);
-      alert("Error payment");
-    }
-  };
+  } catch (err) {
+    console.error(err);
+    alert("Error payment");
+  }
+};
 
   // ✅ LOADING STATE
   if (loading) return <p>Loading...</p>;

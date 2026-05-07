@@ -2,10 +2,23 @@
 
 import { useEffect, useState } from "react";
 import Navbar from "@/components/Navbar";
+import { useRouter } from "next/navigation";
+
+type Flight = {
+  id: number;
+  airline: string;
+  from: string;
+  to: string;
+  departureTime: string;
+  arrivalTime: string;
+  price: number;
+  seats: number;
+};
 
 export default function AdminFlightsPage() {
-  const [flights, setFlights] = useState<any[]>([]);
+  const [flights, setFlights] = useState<Flight[]>([]);
   const [showForm, setShowForm] = useState(false);
+  const [loading, setLoading] = useState(true);
 
   const [airline, setAirline] = useState("");
   const [from, setFrom] = useState("");
@@ -15,54 +28,96 @@ export default function AdminFlightsPage() {
   const [price, setPrice] = useState("");
   const [seats, setSeats] = useState("");
 
-  async function fetchFlights() {
-    const res = await fetch("http://localhost:3000/flights");
-    const data = await res.json();
+  const router = useRouter();
 
-    console.log("FLIGHTS DATA:", data);
-    setFlights(Array.isArray(data) ? data : []);
-;
+  // ✅ FETCH DATA
+  async function fetchFlights() {
+    try {
+      setLoading(true);
+
+      const res = await fetch("http://localhost:3000/flights");
+      if (!res.ok) throw new Error("Failed fetch flights");
+
+      const data = await res.json();
+      setFlights(Array.isArray(data) ? data : []);
+    } catch (err) {
+      console.error(err);
+    } finally {
+      setLoading(false);
+    }
   }
 
   useEffect(() => {
     fetchFlights();
   }, []);
 
-  async function deleteFlight(id: number) {
-    await fetch(`http://localhost:3000/flights/${id}`, {
-      method: "DELETE",
-      headers: {
-        Authorization: `Bearer ${localStorage.getItem("token")}`,
-      },
-    });
+  // ✅ AUTH CHECK
+  useEffect(() => {
+    try {
+      const userStr = localStorage.getItem("user");
+      if (!userStr) {
+        router.push("/login");
+        return;
+      }
 
-    fetchFlights();
+      const user = JSON.parse(userStr);
+
+      if (user.role !== "ADMIN") {
+        router.push("/flights");
+      }
+    } catch {
+      router.push("/login");
+    }
+  }, [router]);
+
+  // ✅ DELETE
+  async function deleteFlight(id: number) {
+    try {
+      await fetch(`http://localhost:3000/flights/${id}`, {
+        method: "DELETE",
+        headers: {
+          Authorization: `Bearer ${localStorage.getItem("token")}`,
+        },
+      });
+
+      fetchFlights();
+    } catch (err) {
+      console.error(err);
+    }
   }
 
+  // ✅ CREATE
   async function createFlight() {
-    const res = await fetch("http://localhost:3000/flights", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${localStorage.getItem("token")}`,
-      },
-      body: JSON.stringify({
-        airline,
-        from,
-        to,
-       departureTime: new Date(departure).toISOString(), 
-      arrivalTime: new Date(arrival).toISOString(),     
-        price: Number(price),
-        seats: Number(seats),
-      }),
-    });
+    try {
+      const res = await fetch("http://localhost:3000/flights", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${localStorage.getItem("token")}`,
+        },
+        body: JSON.stringify({
+          airline,
+          from,
+          to,
+          departureTime: new Date(departure).toISOString(),
+          arrivalTime: new Date(arrival).toISOString(),
+          price: Number(price),
+          seats: Number(seats),
+        }),
+      });
 
-    if (res.ok) {
+      if (!res.ok) throw new Error("Create failed");
+
       setShowForm(false);
       fetchFlights();
-    } else {
+    } catch (err) {
       alert("Failed create flight");
     }
+  }
+
+  // ✅ LOADING UI
+  if (loading) {
+    return <div className="text-white p-10">Loading flights...</div>;
   }
 
   return (
@@ -71,7 +126,6 @@ export default function AdminFlightsPage() {
 
       <div className="max-w-6xl mx-auto p-6">
 
-        {/* HEADER */}
         <div className="flex justify-between items-center mb-6">
           <h1 className="text-3xl font-bold text-purple-300">
             ✈️ Admin Flights
@@ -85,11 +139,10 @@ export default function AdminFlightsPage() {
           </button>
         </div>
 
-        {/* FORM */}
         {showForm && (
-          <div className="bg-white/10 backdrop-blur-lg p-6 rounded-xl mb-6 space-y-3">
-
+          <div className="bg-white/10 p-6 rounded-xl mb-6 space-y-3">
             <div className="grid grid-cols-2 gap-3">
+
               <input placeholder="Airline" className="p-2 rounded text-black"
                 onChange={(e) => setAirline(e.target.value)} />
 
@@ -121,8 +174,7 @@ export default function AdminFlightsPage() {
           </div>
         )}
 
-        {/* TABLE */}
-        <div className="bg-white/10 backdrop-blur-lg rounded-xl overflow-hidden">
+        <div className="bg-white/10 rounded-xl overflow-hidden">
           <table className="w-full text-left">
 
             <thead className="bg-purple-700/50">
@@ -138,28 +190,21 @@ export default function AdminFlightsPage() {
             <tbody>
               {flights.map((f) => (
                 <tr key={f.id} className="border-b border-white/10 hover:bg-white/10">
-
                   <td className="p-3">{f.airline}</td>
-
-                  <td className="p-3">
-                    {f.from} → {f.to}
-                  </td>
-
+                  <td className="p-3">{f.from} → {f.to}</td>
                   <td className="p-3 text-sm">
                     {new Date(f.departureTime).toLocaleTimeString("id-ID", {
                       hour: "2-digit",
                       minute: "2-digit",
                     })}{" "}
                     {new Date(f.arrivalTime).toLocaleTimeString("id-ID", {
-                          hour: "2-digit",
-                          minute: "2-digit",
+                      hour: "2-digit",
+                      minute: "2-digit",
                     })}
                   </td>
-
                   <td className="p-3 text-purple-300 font-semibold">
                     Rp {f.price.toLocaleString("id-ID")}
                   </td>
-
                   <td className="p-3">
                     <button
                       onClick={() => deleteFlight(f.id)}
@@ -168,7 +213,6 @@ export default function AdminFlightsPage() {
                       Delete
                     </button>
                   </td>
-
                 </tr>
               ))}
             </tbody>
@@ -180,5 +224,3 @@ export default function AdminFlightsPage() {
     </div>
   );
 }
-
-
