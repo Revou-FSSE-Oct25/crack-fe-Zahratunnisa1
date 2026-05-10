@@ -35,13 +35,13 @@ export default function FlightsPage() {
       {/* 🌌 BACKGROUND */}
       <div className="absolute inset-0 -z-10">
         <img
-          src="/bg-flights.jpg"
+          src="/pastel-purple2.jpg"
           className="w-full h-full object-cover"
         />
       </div>
 
       {/* 💜 OVERLAY */}
-      <div className="absolute inset-0 bg-black/40 pointer-events-none -z-10" />
+      <div className="absolute inset-0 bg-white/20 pointer-events-none -z-10" />
 
       {/* ✅ NAVBAR (CUKUP SEKALI) */}
       <Navbar />
@@ -54,8 +54,8 @@ export default function FlightsPage() {
           <h1 className="text-5xl font-extrabold text-purple-600">
             ✈️ Destinayo
           </h1>
-          <p className="text-purple-200 mt-2">
-            Temukan perjalanan terbaikmu
+          <p className="mt-3 text-1xl font-bold text-black tracking-widest uppercase">
+            Find your best destination
           </p>
         </div>
 

@@ -46,7 +46,7 @@ export default function DestinationCarousel() {
                   className="w-full h-48 object-cover"
                 />
                 <div className="p-3 bg-white">
-                  <p className="font-semibold">{item.title}</p>
+                  <p className="font-semibold text-black">{item.title}</p>
                 </div>
               </div>
             </CarouselItem>
