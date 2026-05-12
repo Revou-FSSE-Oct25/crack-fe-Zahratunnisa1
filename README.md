@@ -1,36 +1,309 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# ✈️ DestinaYo — Flight Booking Web Application
 
-## Getting Started
+DestinaYo is a modern online flight booking web application built with **Next.js**, **NestJS**, **Prisma**, and **PostgreSQL**.
 
-First, run the development server:
+Users can search flights, book tickets, manage bookings, and admins can monitor customer reservations through a dedicated admin dashboard.
+
+---
+
+# 🌐 Features
+
+## 👤 Authentication
+
+* User Login
+* User Sign Up
+* JWT Authentication
+* Role-based Authorization
+* Admin & Customer Roles
+
+---
+
+## ✈️ Flight Features
+
+* Browse available flights
+* Flight detail page
+* Flight search
+* Booking system
+* Passenger data input
+* Booking history
+* Cancel booking
+
+---
+
+## 🛠️ Admin Features
+
+* View all customer bookings
+* View booking passengers
+* Accept booking
+* Reject booking
+* Delete booking
+* Monitor booking status
+
+---
+
+# 🧰 Tech Stack
+
+## Frontend
+
+* Next.js
+* TypeScript
+* Tailwind CSS
+* ShadCN UI
+
+## Backend
+
+* NestJS
+* Prisma ORM
+* JWT Authentication
+* PostgreSQL
+
+---
+
+# 📁 Project Structure
+
+```bash
+flight-booking-frontend/
+flight-booking-backend/
+```
+
+---
+
+# 🚀 Installation
+
+## 1. Clone Repository
+
+```bash
+git clone <YOUR_GITHUB_REPOSITORY>
+```
+
+---
+
+# ⚙️ Backend Setup
+
+## Go to backend folder
+
+```bash
+cd flight-booking-backend
+```
+
+## Install dependencies
+
+```bash
+npm install
+```
+
+## Setup environment variables
+
+Create `.env`
+
+```env
+DATABASE_URL="postgresql://YOUR_DATABASE_URL"
+JWT_SECRET="SECRET_KEY"
+```
+
+## Run Prisma Migration
+
+```bash
+npx prisma migrate dev
+```
+
+## Run Backend Server
+
+```bash
+npm run start:dev
+```
+
+Backend will run on:
+
+```bash
+http://localhost:3000
+```
+
+---
+
+# 💻 Frontend Setup
+
+## Go to frontend folder
+
+```bash
+cd flight-booking-frontend
+```
+
+## Install dependencies
+
+```bash
+npm install
+```
+
+## Run Frontend
 
 ```bash
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Frontend will run on:
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+```bash
+http://localhost:3001
+```
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+---
 
-## Learn More
+# 🔑 Demo Accounts
 
-To learn more about Next.js, take a look at the following resources:
+## Admin Account
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+```txt
+Email: admin@gmail.com
+Password: ********
+```
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+## Customer Account
 
-## Deploy on Vercel
+```txt
+Email: zahra@gmail.com
+Password: ********
+```
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+---
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+# 🗄️ Database
+
+This project uses PostgreSQL with Prisma ORM.
+
+Main models:
+
+* User
+* Flight
+* Booking
+* Passenger
+
+---
+
+# 📸 Screenshots
+
+You can add screenshots here later.
+
+Example:
+
+```md
+![Login Page](./screenshots/login.png)
+```
+
+---
+
+# 🌍 Deployment
+
+## Frontend Deployment
+
+Will be deployed using:
+
+* Railway
+
+Frontend URL:
+
+```txt
+COMING SOON
+```
+
+---
+
+## Backend Deployment
+
+Will be deployed using:
+
+* Railway
+
+Backend URL:
+
+```txt
+COMING SOON
+```
+
+---
+
+# 📚 API Endpoints
+
+## Authentication
+
+```http
+POST /auth/login
+POST /auth/register
+```
+
+---
+
+## Flights
+
+```http
+GET /flights
+GET /flights/:id
+```
+
+---
+
+## Bookings
+
+```http
+POST /bookings
+GET /bookings/my
+DELETE /bookings/:id
+PATCH /bookings/:id/pay
+```
+
+---
+
+## Admin
+
+```http
+GET /bookings/admin/all
+PATCH /bookings/admin/:id/confirm
+PATCH /bookings/admin/:id/reject
+DELETE /bookings/admin/:id
+```
+
+---
+
+# 🎨 UI Design
+
+DestinaYo uses:
+
+* Purple modern theme
+* Glassmorphism UI
+* Responsive layout
+* Clean airline-inspired interface
+
+---
+
+# 🔒 Authentication Flow
+
+1. User logs in
+2. Backend returns JWT token
+3. Token stored in localStorage
+4. Protected routes use Authorization header
+5. RoleGuard protects admin routes
+
+---
+
+# 📌 Future Improvements
+
+* Payment Gateway Integration
+* Email Notifications
+* Flight Schedule Management
+* Seat Selection
+* Upload Passenger Documents
+* Real Airline API Integration
+* Dark Mode
+* Mobile Optimization
+
+---
+
+# 👩‍💻 Author
+
+Created by Zahra ✨
+
+---
+
+# 📄 License
+
+This project is for educational and portfolio purposes.
