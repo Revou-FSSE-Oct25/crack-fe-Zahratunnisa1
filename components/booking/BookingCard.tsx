@@ -4,7 +4,16 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 
-export default function BookingCard({ booking, onCancel }) {
+type BookingCardProps = {
+  booking: any;
+  onCancel: (id: number) => void;
+};
+
+export default function BookingCard({
+  booking,
+  onCancel,
+}: BookingCardProps) 
+ {
   return (
     <Card className="bg-white border border-gray-200 rounded-2xl shadow-sm hover:shadow-md transition">
 
