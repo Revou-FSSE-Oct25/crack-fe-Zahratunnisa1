@@ -34,7 +34,6 @@ export const authOptions: NextAuthOptions = {
 
         if (!isValid) return null;
 
-        // ✅ IMPORTANT: jangan return password atau spread user
         return {
           id: user.id.toString(),
           name: user.name,
@@ -52,7 +51,7 @@ export const authOptions: NextAuthOptions = {
   callbacks: {
     async jwt({ token, user }) {
       if (user) {
-        token.id = user.id;
+        token.id = (user as any).id;
         token.role = (user as any).role;
       }
       return token;
