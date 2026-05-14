@@ -1,69 +1,75 @@
-import NextAuth, { type NextAuthOptions } from "next-auth"
-import CredentialsProvider from "next-auth/providers/credentials"
-import { PrismaClient } from "@prisma/client"
-import bcrypt from "bcrypt"
+import NextAuth, { type NextAuthOptions } from "next-auth";
+import CredentialsProvider from "next-auth/providers/credentials";
+import { PrismaClient } from "@prisma/client";
+import bcrypt from "bcrypt";
 
-const prisma = new PrismaClient()
+const prisma = new PrismaClient();
 
 export const authOptions: NextAuthOptions = {
   providers: [
     CredentialsProvider({
       name: "credentials",
       credentials: {
-        email: {},
-        password: {},
+        email: { label: "Email", type: "text" },
+        password: { label: "Password", type: "password" },
       },
 
       async authorize(credentials) {
-        if (!credentials) return null
+        if (!credentials?.email || !credentials?.password) {
+          return null;
+        }
 
         const user = await prisma.user.findUnique({
-          where: { email: credentials.email },
-        })
+          where: {
+            email: credentials.email,
+          },
+        });
 
-        if (!user) return null
+        if (!user) return null;
 
         const isValid = await bcrypt.compare(
           credentials.password,
           user.password
-        )
+        );
 
-        if (!isValid) return null
+        if (!isValid) return null;
 
-        // ⬇️ UBAH BAGIAN INI
+        // ✅ IMPORTANT: jangan return password atau spread user
         return {
-          ...user,
           id: user.id.toString(),
-        }
+          name: user.name,
+          email: user.email,
+          role: user.role,
+        };
       },
     }),
   ],
 
   session: {
-    strategy: "jwt" as const,
+    strategy: "jwt",
   },
 
   callbacks: {
     async jwt({ token, user }) {
       if (user) {
-        token.role = user.role
+        token.id = user.id;
+        token.role = (user as any).role;
       }
-      return token
+      return token;
     },
 
     async session({ session, token }) {
       if (session.user) {
-        session.user.role = token.role as string
+        (session.user as any).id = token.id;
+        (session.user as any).role = token.role;
       }
-      return session
+      return session;
     },
   },
 
   secret: process.env.NEXTAUTH_SECRET,
-}
+};
 
-const handler = NextAuth(authOptions)
+const handler = NextAuth(authOptions);
 
-export { handler as GET, handler as POST }
-
-
+export { handler as GET, handler as POST };
