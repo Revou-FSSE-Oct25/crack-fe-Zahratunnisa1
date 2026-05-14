@@ -5,7 +5,6 @@ import bcrypt from "bcrypt"
 
 const prisma = new PrismaClient()
 
-// ⬇️ WAJIB ADA EXPORT DI SINI
 export const authOptions: NextAuthOptions = {
   providers: [
     CredentialsProvider({
@@ -14,6 +13,7 @@ export const authOptions: NextAuthOptions = {
         email: {},
         password: {},
       },
+
       async authorize(credentials) {
         if (!credentials) return null
 
@@ -30,13 +30,19 @@ export const authOptions: NextAuthOptions = {
 
         if (!isValid) return null
 
-        return user
+        // ⬇️ UBAH BAGIAN INI
+        return {
+          ...user,
+          id: user.id.toString(),
+        }
       },
     }),
   ],
+
   session: {
     strategy: "jwt" as const,
   },
+
   callbacks: {
     async jwt({ token, user }) {
       if (user) {
@@ -44,6 +50,7 @@ export const authOptions: NextAuthOptions = {
       }
       return token
     },
+
     async session({ session, token }) {
       if (session.user) {
         session.user.role = token.role as string
@@ -51,6 +58,7 @@ export const authOptions: NextAuthOptions = {
       return session
     },
   },
+
   secret: process.env.NEXTAUTH_SECRET,
 }
 
