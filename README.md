@@ -73,7 +73,8 @@ flight-booking-backend/
 ## 1. Clone Repository
 
 ```bash
-git clone <YOUR_GITHUB_REPOSITORY>
+git clone https://github.com/Revou-FSSE-Oct25/crack-be-Zahratunnisa1.git
+git clone https://github.com/Revou-FSSE-Oct25/crack-fe-Zahratunnisa1.git
 ```
 
 ---
@@ -182,15 +183,6 @@ Main models:
 
 # 📸 Screenshots
 
-You can add screenshots here later.
-
-Example:
-
-```md
-![Login Page](./screenshots/login.png)
-```
-
----
 
 # 🌍 Deployment
 
@@ -202,25 +194,15 @@ Will be deployed using:
 
 Frontend URL:
 
-```txt
-COMING SOON
-```
-
----
-
 ## Backend Deployment
 
 Will be deployed using:
 
-* Railway
+* Vercel
 
 Backend URL:
 
-```txt
-COMING SOON
-```
 
----
 
 # 📚 API Endpoints
 
@@ -300,7 +282,7 @@ DestinaYo uses:
 
 # 👩‍💻 Author
 
-Created by Zahra ✨
+Created by Zahratunnisa (2026) ✨
 
 ---
 
