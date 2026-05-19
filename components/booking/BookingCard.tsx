@@ -12,8 +12,16 @@ type BookingCardProps = {
 export default function BookingCard({
   booking,
   onCancel,
-}: BookingCardProps) 
- {
+}: BookingCardProps) {
+
+  const handleDetail = () => {
+    if (booking.status === "PAID") {
+      window.location.href = `/e-ticket/${booking.id}`;
+    } else {
+      window.location.href = `/booking/${booking.id}`;
+    }
+  };
+
   return (
     <Card className="bg-white border border-gray-200 rounded-2xl shadow-sm hover:shadow-md transition">
 
@@ -22,12 +30,10 @@ export default function BookingCard({
         {/* LEFT */}
         <div className="flex items-center gap-4">
 
-          {/* ICON */}
           <div className="bg-purple-100 text-purple-600 p-3 rounded-xl">
             ✈️
           </div>
 
-          {/* INFO */}
           <div>
             <h2 className="text-lg font-semibold text-gray-800">
               {booking.flight.from} → {booking.flight.to}
@@ -49,14 +55,15 @@ export default function BookingCard({
 
           <Button
             variant="outline"
-            className="border-gray-300"
-            onClick={() => window.location.href = `/booking/${booking.id}`}
+            className="border-gray-300 text-black"
+            onClick={handleDetail}
           >
             Detail
           </Button>
 
           <Button
             variant="destructive"
+            className="border-gray-300 text-black"
             onClick={() => onCancel(booking.id)}
           >
             Cancel

@@ -62,7 +62,7 @@ export default function MyBookings() {
       {bookings.length === 0 ? (
         <p className="text-gray-400">No bookings found.</p>
       ) : (
-        <div className="space-y-4">
+        <div className="space-y-4 text-black">
           {bookings.map((b) => (
             <BookingCard
               key={b.id}

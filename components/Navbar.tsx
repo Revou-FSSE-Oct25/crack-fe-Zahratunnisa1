@@ -42,14 +42,14 @@ export default function Navbar() {
         {/* CUSTOMER */}
         <button
           onClick={() => router.push("/flights")}
-          className="text-gray-700 hover:text-purple-600 transition font-medium"
+          className="px-4 py-2 rounded-full font-medium tracking-tight text-gray-700 hover:bg-purple-100 hover:text-purple-600 transition-all duration-300"
         >
           Flights
         </button>
 
         <button
           onClick={() => router.push("/my-bookings")}
-          className="text-gray-700 hover:text-purple-600 transition font-medium"
+          className="px-4 py-2 rounded-full font-medium tracking-tight text-gray-700 hover:bg-purple-100 hover:text-purple-600 transition-all duration-300"
         >
           My Bookings
         </button>
@@ -59,14 +59,14 @@ export default function Navbar() {
           <>
             <button
               onClick={() => router.push("/admin/flights")}
-              className="text-purple-700 hover:text-purple-900 transition font-semibold"
+              className="px-4 py-2 rounded-full font-medium tracking-tight text-gray-700 hover:bg-purple-100 hover:text-purple-600 transition-all duration-300"
             >
               Admin Flights
             </button>
 
             <button
               onClick={() => router.push("/admin/manage-bookings")}
-              className="text-purple-700 hover:text-purple-900 transition font-semibold"
+              className="px-4 py-2 rounded-full font-medium tracking-tight text-gray-700 hover:bg-purple-100 hover:text-purple-600 transition-all duration-300"
             >
               Manage Bookings
             </button>

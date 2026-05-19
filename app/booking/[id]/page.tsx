@@ -229,7 +229,7 @@ const handlePayment = async () => {
 
               <hr />
 
-              <div className="flex justify-between font-semibold">
+              <div className="flex justify-between font-semibold text-gray-600">
                 <span>Total</span>
                 <span className="text-purple-700">
                   Rp{" "}
@@ -237,15 +237,15 @@ const handlePayment = async () => {
                 </span>
               </div>
 
-              <h2 className="text-lg font-semibold mt-6 mb-2">
+              <h2 className="text-black font-semibold mt-6 mb-2">
                 Passengers
               </h2>
 
             {booking.passengers?.map((p: any) => (
-              <div key={p.id} className="border p-3 rounded mb-2">
+              <div key={p.id} className="border p-3 rounded mb-2 text-black">
                 <p className="font-semibold">{p.name}</p>
-                <p className="text-sm text-gray-500">{p.email}</p>
-                <p className="text-sm text-gray-500">{p.phone}</p>
+                <p className="text-sm text-black">{p.email}</p>
+                <p className="text-sm text-black">{p.phone}</p>
               </div>
             ))}
             </CardContent>
