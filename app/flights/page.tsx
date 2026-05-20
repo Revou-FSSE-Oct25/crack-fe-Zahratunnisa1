@@ -2,21 +2,40 @@
 
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
-import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent } from "@/components/ui/card";
 import { motion } from "framer-motion";
 import Navbar from "@/components/Navbar";
 import DestinationCarousel from "@/components/home/DestinationCarousel";
 import CheapFlights from "@/components/home/CheapFlights";
 
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 
 export default function FlightsPage() {
   const [flights, setFlights] = useState<any[]>([]);
   const [from, setFrom] = useState("");
   const [to, setTo] = useState("");
   const [loading, setLoading] = useState(false);
+
   const router = useRouter();
+
+  const cities = [
+    "Jakarta",
+    "Balikpapan",
+    "Medan",
+    "Surabaya",
+    "Bandung",
+    "Makassar",
+    "Singapore",
+    "Kuala Lumpur",
+    "Tokyo",
+    "Seoul",
+  ];
 
   useEffect(() => {
     fetch("http://localhost:3000/flights")
@@ -26,13 +45,18 @@ export default function FlightsPage() {
 
   const searchFlights = () => {
     if (!from || !to) return;
-    router.push(`/flights/result?from=${from}&to=${to}`);
+
+    setLoading(true);
+
+    setTimeout(() => {
+      router.push(`/flights/result?from=${from}&to=${to}`);
+    }, 700);
   };
 
   return (
     <div className="relative min-h-screen">
 
-      {/* 🌌 BACKGROUND */}
+      {/* Background */}
       <div className="absolute inset-0 -z-10">
         <img
           src="/pastel-purple2.jpg"
@@ -40,56 +64,136 @@ export default function FlightsPage() {
         />
       </div>
 
-      {/* 💜 OVERLAY */}
       <div className="absolute inset-0 bg-white/20 pointer-events-none -z-10" />
 
-      {/* ✅ NAVBAR (CUKUP SEKALI) */}
       <Navbar />
 
-      {/* CONTENT */}
       <div className="relative z-10">
 
-        {/* HEADER */}
+        {/* Header */}
         <div className="text-center mt-16">
-          <h1 className="text-5xl font-extrabold text-purple-600">
+
+          <motion.h1
+            initial={{ opacity: 0, y: -30 }}
+            animate={{ opacity: 1, y: 0 }}
+            className="text-6xl font-extrabold text-purple-600"
+          >
             ✈️ Destinayo
-          </h1>
-          <p className="mt-3 text-1xl font-bold text-black tracking-widest uppercase">
+          </motion.h1>
+
+          <p className="mt-3 text-black tracking-[5px] uppercase font-bold">
             Find your best destination
           </p>
+
         </div>
 
         {/* SEARCH */}
-        <div className="flex flex-1 items-center justify-center px-6 mt-10">
+        <div className="flex justify-center mt-10 px-6">
+
           <motion.div
             initial={{ opacity: 0, y: 40 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.5 }}
-            className="w-full max-w-2xl bg-white/80 backdrop-blur-xl shadow-2xl rounded-2xl p-6 border border-white/30"
+            className="
+              w-full
+              max-w-5xl
+              bg-white/95
+              backdrop-blur-md
+              shadow-xl
+              rounded-2xl
+              px-6
+              py-3
+              border
+              border-purple-100
+            "
           >
-            <div className="flex flex-col md:flex-row gap-3">
-              <Input
-                className="text-black"
-                placeholder="From"
-                value={from}
-                onChange={(e) => setFrom(e.target.value)}
-              />
 
-              <Input
-                className="text-black"
-                placeholder="To"
-                value={to}
-                onChange={(e) => setTo(e.target.value)}
-              />
+            <div className="grid md:grid-cols-3 gap-4 items-center">
 
+              {/* FROM */}
+              <Select onValueChange={setFrom}>
+                <SelectTrigger className="h-10 rounded-xl bg-white border border-purple-200 shadow-sm text-black">
+
+                  <SelectValue
+                    placeholder="🛫 From"
+                    className="text-black"
+                  />
+
+                </SelectTrigger>
+
+                <SelectContent className="bg-white text-black">
+
+                  {cities.map((city) => (
+                    <SelectItem
+                      key={city}
+                      value={city}
+                      className="
+                        text-black
+                        hover:bg-purple-50
+                        focus:bg-purple-50
+                      "
+                    >
+                      {city}
+                    </SelectItem>
+                  ))}
+
+                </SelectContent>
+              </Select>
+
+
+              {/* TO */}
+              <Select onValueChange={setTo}>
+
+                <SelectTrigger className="h-10 rounded-xl bg-white border border-purple-200 shadow-sm text-black">
+
+                  <SelectValue
+                    placeholder="🛬 To"
+                    className="text-black"
+                  />
+
+                </SelectTrigger>
+
+                <SelectContent className="bg-white text-black">
+
+                  {cities.map((city) => (
+                    <SelectItem
+                      key={city}
+                      value={city}
+                      className="
+                        text-black
+                        hover:bg-purple-50
+                        focus:bg-purple-50
+                      "
+                    >
+                      {city}
+                    </SelectItem>
+                  ))}
+
+                </SelectContent>
+
+              </Select>
+
+
+              {/* BUTTON */}
               <Button
                 onClick={searchFlights}
-                className="bg-purple-600 hover:bg-purple-700 text-white"
+                className="
+                h-10
+                rounded-xl
+                bg-purple-600
+                hover:bg-purple-700
+                text-base
+                font-semibold
+                shadow-lg
+                "
               >
-                {loading ? "Searching..." : "Search"}
+                {loading ? "Searching..." : "Search ✨"}
               </Button>
+
             </div>
+
           </motion.div>
+
         </div>
 
         <DestinationCarousel />
@@ -99,4 +203,3 @@ export default function FlightsPage() {
     </div>
   );
 }
-
